@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <defs>
+    <radialGradient id="bgGlow" cx="50%" cy="42%" r="60%">
+      <stop offset="0%" stop-color="#1e3c72" />
+      <stop offset="100%" stop-color="#09132c" />
+    </radialGradient>
+    <linearGradient id="woodCyl" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#eab06d" />
+      <stop offset="22%" stop-color="#ce813b" />
+      <stop offset="68%" stop-color="#ab6124" />
+      <stop offset="100%" stop-color="#7c3f13" />
+    </linearGradient>
+    <linearGradient id="goldBorder" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffe885" />
+      <stop offset="50%" stop-color="#e8a728" />
+      <stop offset="100%" stop-color="#b87312" />
+    </linearGradient>
+    <clipPath id="headClip">
+      <rect x="16" y="7" width="32" height="50" rx="5" />
+    </clipPath>
+  </defs>
+
+  <!-- Badge background -->
+  <rect x="2" y="2" width="60" height="60" rx="14" fill="url(#bgGlow)" stroke="url(#goldBorder)" stroke-width="2.5" />
+
+  <!-- Subtle golden sunbeam glow behind character -->
+  <circle cx="32" cy="34" r="22" fill="#f5b942" opacity="0.14" />
+
+  <!-- Wooden cylinder head & shoulders -->
+  <g clip-path="url(#headClip)">
+    <rect x="16" y="7" width="32" height="50" fill="url(#woodCyl)" />
+    <!-- Top log bevel -->
+    <rect x="16" y="7" width="32" height="3.2" fill="#7c4215" opacity="0.55" />
+    <!-- Subtle wood grain lines -->
+    <path d="M21 10 C20 22, 22 36, 20 56" fill="none" stroke="#854516" stroke-width="1" opacity="0.38" />
+    <path d="M32 10 C33 20, 31 38, 32 56" fill="none" stroke="#854516" stroke-width="1" opacity="0.30" />
+    <path d="M43 10 C42 24, 44 40, 42 56" fill="none" stroke="#6d350f" stroke-width="1" opacity="0.38" />
+  </g>
+  <rect x="16" y="7" width="32" height="50" rx="5" fill="none" stroke="#5c2c0b" stroke-width="1.2" />
+
+  <!-- Eyebrows -->
+  <path d="M19.5 20.5 Q24.5 16.5 29 19.5" fill="none" stroke="#231610" stroke-width="2.6" stroke-linecap="round" />
+  <path d="M35 19.5 Q39.5 16.5 44.5 20.5" fill="none" stroke="#231610" stroke-width="2.6" stroke-linecap="round" />
+
+  <!-- Left Eye -->
+  <ellipse cx="24.5" cy="28.5" rx="5.5" ry="6.2" fill="#fbf7f2" stroke="#4e260c" stroke-width="1" />
+  <circle cx="25.1" cy="28.7" r="3.4" fill="#6b230c" />
+  <circle cx="25.1" cy="28.7" r="1.8" fill="#170d09" />
+  <circle cx="23.9" cy="27.3" r="1.05" fill="#ffffff" />
+
+  <!-- Right Eye -->
+  <ellipse cx="39.5" cy="28.5" rx="5.5" ry="6.2" fill="#fbf7f2" stroke="#4e260c" stroke-width="1" />
+  <circle cx="38.9" cy="28.7" r="3.4" fill="#6b230c" />
+  <circle cx="38.9" cy="28.7" r="1.8" fill="#170d09" />
+  <circle cx="37.7" cy="27.3" r="1.05" fill="#ffffff" />
+
+  <!-- Nose -->
+  <path d="M32 29 L32 36 Q32 38 30 37.5 M32 36 Q32 38 34 37.5" fill="none" stroke="#7d3e14" stroke-width="1.6" stroke-linecap="round" />
+  <ellipse cx="32" cy="36.2" rx="2.4" ry="1.8" fill="#d98e46" stroke="#7d3e14" stroke-width="0.9" />
+
+  <!-- Smile -->
+  <path d="M23.5 41.5 Q32 46.8 40.5 41.5" fill="none" stroke="#5d2b0c" stroke-width="2" stroke-linecap="round" />
+  <path d="M26 43.2 Q32 46.2 38 43.2" fill="none" stroke="#eab06d" stroke-width="0.9" stroke-linecap="round" opacity="0.6" />
+
+  <!-- Golden sparkle accent -->
+  <path d="M52 10 L53.4 13.6 L57 15 L53.4 16.4 L52 20 L50.6 16.4 L47 15 L50.6 13.6 Z" fill="#ffe678" />
+</svg>
