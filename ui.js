@@ -116,8 +116,6 @@ const el = {
   panelInfo: document.getElementById('panel-info'),
 
   optSaveNow: document.getElementById('opt-save-now'),
-  optExportSave: document.getElementById('opt-export-save'),
-  optImportSave: document.getElementById('opt-import-save'),
   optWipeSave: document.getElementById('opt-wipe-save'),
   optSoundToggle: document.getElementById('opt-sound-toggle'),
   optVolumeSlider: document.getElementById('opt-volume-slider'),
@@ -499,98 +497,6 @@ function openRenameBakeryModal() {
 
 function submitRename() {
   if (typeof window.__submitRename === 'function') window.__submitRename();
-}
-
-function openExportSaveModal() {
-  const saveStr = Engine.serializeSave(state);
-  openModal({
-    title: '📤 Export Save',
-    bodyHtml: `
-      <p>Copy your save string below and keep it somewhere safe:</p>
-      <textarea id="export-textarea" class="modal-textarea" readonly>${escapeHtml(saveStr)}</textarea>
-      <div id="export-feedback" class="modal-success hidden"></div>
-    `,
-    buttons: [
-      {
-        label: '📋 Copy to Clipboard',
-        className: 'cc-btn cc-btn-primary',
-        onClick: async () => {
-          const ta = document.getElementById('export-textarea');
-          const fb = document.getElementById('export-feedback');
-          ta.select();
-          try {
-            if (navigator.clipboard?.writeText) {
-              await navigator.clipboard.writeText(ta.value);
-            } else {
-              document.execCommand('copy');
-            }
-            fb.textContent = 'Copied to clipboard!';
-            fb.classList.remove('hidden');
-          } catch {
-            fb.textContent = 'Selected text — press Ctrl+C to copy.';
-            fb.classList.remove('hidden');
-          }
-        },
-      },
-      { label: 'Close', className: 'cc-btn', onClick: closeModal },
-    ],
-    onMount: () => {
-      const ta = document.getElementById('export-textarea');
-      ta.focus();
-      ta.select();
-    },
-  });
-}
-
-function openImportSaveModal() {
-  openModal({
-    title: '📥 Import Save',
-    bodyHtml: `
-      <p>Paste an exported Tangsahur Clicker save string below. This replaces your current bakery.</p>
-      <textarea id="import-textarea" class="modal-textarea" placeholder="Paste save code here..."></textarea>
-      <div id="import-feedback" class="modal-error hidden"></div>
-    `,
-    buttons: [
-      { label: 'Cancel', className: 'cc-btn', onClick: closeModal },
-      {
-        label: 'Import Save',
-        className: 'cc-btn cc-btn-primary',
-        onClick: () => {
-          const ta = document.getElementById('import-textarea');
-          const fb = document.getElementById('import-feedback');
-          const raw = ta.value.trim();
-          if (!raw) {
-            fb.textContent = 'Please paste a save string first.';
-            fb.classList.remove('hidden');
-            return;
-          }
-          const imported = Engine.deserializeSave(raw);
-          if (!imported) {
-            fb.textContent = 'Invalid or corrupted save string. No changes made.';
-            fb.classList.remove('hidden');
-            return;
-          }
-          state = imported;
-          Engine.applyOfflineProgress(state, Date.now());
-          resetRenderCaches();
-          refreshDerivedAndUI();
-          saveGameState(false);
-          closeModal();
-          if (state.isAscending) {
-            openAscensionOverlay();
-          }
-          showToast({
-            icon: '📥',
-            title: 'Save Imported',
-            text: `Loaded ${state.bakeryName}'s Sahur Bakery!`,
-          });
-        },
-      },
-    ],
-    onMount: () => {
-      document.getElementById('import-textarea').focus();
-    },
-  });
 }
 
 function openWipeSaveModal() {
@@ -1904,8 +1810,6 @@ function bindEvents() {
 
   // Options Controls
   el.optSaveNow.addEventListener('click', () => saveGameState(true));
-  el.optExportSave.addEventListener('click', openExportSaveModal);
-  el.optImportSave.addEventListener('click', openImportSaveModal);
   el.optWipeSave.addEventListener('click', openWipeSaveModal);
 
   el.optSoundToggle.addEventListener('click', () => {
