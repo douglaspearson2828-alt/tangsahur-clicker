@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tangsahur Clicker</title>
+  <link rel="icon" type="image/svg+xml" href="./assets/favicon.svg" />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body class="fancy-graphics">
+  <div id="app" class="app-shell">
+    <!-- Top Thin Header Bar -->
+    <header id="top-bar" class="top-bar" role="banner">
+      <div class="top-bar-left">
+        <img class="brand-icon" src="./assets/favicon.svg" alt="" width="20" height="20" />
+        <span class="brand-title">Tangsahur Clicker <span id="version-badge" class="version-badge">v1.0.0</span></span>
+        <span class="sahur-clock-pill" title="The witching hour of Sahur">🌙 3:00 AM Sahur</span>
+      </div>
+
+      <div class="top-bar-right">
+        <span id="save-status" class="save-status" aria-live="polite">Ready</span>
+        <button id="top-save-btn" class="top-btn" type="button" title="Save game now (Ctrl+S)">💾 Save</button>
+        <button id="top-mute-btn" class="top-btn" type="button" aria-pressed="false" title="Toggle sound">🔊 Sound: ON</button>
+        <button id="top-legacy-btn" class="top-btn top-btn-legacy" type="button" title="View Legacy &amp; Ascend">
+          ✨ Legacy <span id="top-pending-chips" class="pending-badge hidden">+0</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Mobile Tab Bar (< 900px) -->
+    <nav id="mobile-tabs" class="mobile-tabs" aria-label="Game Sections">
+      <button type="button" class="mobile-tab active" data-tab="left" aria-selected="true">🥁 Sahur</button>
+      <button type="button" class="mobile-tab" data-tab="center" aria-selected="false">🏛️ Bakery</button>
+      <button type="button" class="mobile-tab" data-tab="right" aria-selected="false">🛒 Store</button>
+    </nav>
+
+    <!-- 3-Column Main Layout -->
+    <main id="main-grid" class="main-grid" data-active-tab="left">
+      <!-- LEFT COLUMN (~30%): Big Tangsahur Stage -->
+      <section id="col-left" class="column col-left" aria-label="Tangsahur Stage">
+        <div class="star-field" aria-hidden="true"></div>
+
+        <!-- Bakery Name Plaque -->
+        <div class="bakery-header">
+          <button id="bakery-name-btn" class="bakery-name-btn" type="button" title="Click to rename your Sahur bakery">
+            <span id="bakery-name-text" class="bakery-name-text">Tung Tung Sahur's Sahur Bakery</span>
+            <span class="edit-pencil" aria-hidden="true">✎</span>
+          </button>
+        </div>
+
+        <!-- Giant Tangsahur Counter -->
+        <div class="counter-box" aria-live="off">
+          <div id="tangsahur-count" class="tangsahur-count">0 Tangsahurs</div>
+          <div id="tangsahur-tps" class="tangsahur-tps">per second: <strong>0</strong></div>
+          <div id="buffs-bar" class="buffs-bar" aria-live="polite"></div>
+        </div>
+
+        <!-- Interactive Big Tangsahur Stage -->
+        <div id="sahur-stage" class="sahur-stage">
+          <div class="sunbeams sunbeams-back" aria-hidden="true"></div>
+          <div class="sunbeams sunbeams-front" aria-hidden="true"></div>
+
+          <!-- Orbiting Miniature Kentongan Drumstick Cursors -->
+          <div id="kentongan-orbit" class="kentongan-orbit" aria-hidden="true"></div>
+
+          <!-- Click Shockwave Container -->
+          <div id="shockwave-layer" class="shockwave-layer" aria-hidden="true"></div>
+
+          <!-- Main Big Tangsahur Button -->
+          <button id="big-tangsahur-btn" class="big-tangsahur-btn" type="button" aria-label="Tap Tung Tung Tung Sahur to bake Tangsahurs">
+            <img
+              id="big-tangsahur-img"
+              class="big-tangsahur-img"
+              src="./assets/tangsahur.png"
+              alt="Tung Tung Tung Sahur"
+              draggable="false"
+            />
+          </button>
+
+          <!-- Floating +X Click Numbers & Mini Falling Particles -->
+          <div id="click-fx-layer" class="click-fx-layer" aria-hidden="true"></div>
+        </div>
+
+        <!-- Animated Layered Milk Waves -->
+        <div id="milk-basin" class="milk-basin" title="Milk boosts your TpS with Kitten upgrades!">
+          <div id="milk-fill" class="milk-fill">
+            <svg class="milk-wave milk-wave-back" viewBox="0 0 1200 120" preserveAspectRatio="none" aria-hidden="true">
+              <path d="M0,48 C180,96 360,0 600,48 C840,96 1020,0 1200,48 L1200,120 L0,120 Z"></path>
+            </svg>
+            <svg class="milk-wave milk-wave-front" viewBox="0 0 1200 120" preserveAspectRatio="none" aria-hidden="true">
+              <path d="M0,56 C200,12 400,98 600,56 C800,12 1000,98 1200,56 L1200,120 L0,120 Z"></path>
+            </svg>
+            <div class="milk-body"></div>
+          </div>
+          <div id="milk-label" class="milk-label">Plain Milk (0%)</div>
+        </div>
+      </section>
+
+      <div class="column-divider" aria-hidden="true"></div>
+
+      <!-- CENTER COLUMN (~42%): Ticker, Toolbar, Dioramas & Center Overlays -->
+      <section id="col-center" class="column col-center" aria-label="Bakery Center">
+        <!-- News Ticker -->
+        <div id="news-ticker" class="news-ticker" role="region" aria-label="Sahur News Ticker">
+          <button id="news-ticker-btn" class="news-ticker-btn" type="button" title="Read Sahur news">
+            <span class="news-prefix">NEWS:</span>
+            <span id="news-ticker-text" class="news-ticker-text">3:00 AM approaches. The kentongan echoes across the neighborhood.</span>
+          </button>
+        </div>
+
+        <!-- Center Toolbar -->
+        <div class="center-toolbar">
+          <div class="toolbar-buttons" role="toolbar" aria-label="Menu">
+            <button id="btn-options" class="toolbar-btn" type="button" data-panel="options">⚙️ Options</button>
+            <button id="btn-stats" class="toolbar-btn" type="button" data-panel="stats">📊 Stats</button>
+            <button id="btn-info" class="toolbar-btn" type="button" data-panel="info">📜 Info</button>
+            <button id="btn-legacy" class="toolbar-btn toolbar-btn-legacy" type="button">
+              ✨ Legacy <span id="toolbar-pending-chips" class="pending-badge hidden">+0</span>
+            </button>
+          </div>
+
+          <!-- Sahur Lump Indicator Widget -->
+          <button id="lump-widget" class="lump-widget hidden" type="button" aria-label="Sahur Lump status">
+            <span id="lump-icon" class="lump-icon">🪵</span>
+            <span class="lump-meta">
+              <span id="lump-count" class="lump-count">0 Lumps</span>
+              <span id="lump-timer" class="lump-timer">Growing...</span>
+            </span>
+          </button>
+        </div>
+
+        <!-- Center Content Area: Diorama Rows + Center Overlay Panels -->
+        <div class="center-viewport">
+          <!-- Building Diorama Rows -->
+          <div id="dioramas-container" class="dioramas-container">
+            <div id="dioramas-empty" class="dioramas-empty">
+              <div class="empty-emblem">🥁</div>
+              <h3>Your 3:00 AM Sahur Bakery is Quiet...</h3>
+              <p>Click <strong>Tung Tung Tung Sahur</strong> on the left to drum up Tangsahurs, then hire Kentongan Sticks &amp; Sahur Grandmas in the Store!</p>
+            </div>
+            <div id="dioramas-list" class="dioramas-list"></div>
+          </div>
+
+          <!-- Center Overlay Panel: OPTIONS -->
+          <div id="panel-options" class="center-panel hidden" role="dialog" aria-label="Options">
+            <div class="panel-header">
+              <h2>⚙️ Options</h2>
+              <button class="panel-close-btn" type="button" data-close-panel aria-label="Close Options">✕</button>
+            </div>
+            <div class="panel-body">
+              <div class="panel-section">
+                <h3>Save Management</h3>
+                <div class="options-action-row">
+                  <button id="opt-save-now" class="cc-btn cc-btn-primary" type="button">💾 Save Now</button>
+                  <button id="opt-export-save" class="cc-btn" type="button">📤 Export Save</button>
+                  <button id="opt-import-save" class="cc-btn" type="button">📥 Import Save</button>
+                  <button id="opt-wipe-save" class="cc-btn cc-btn-danger" type="button">🗑️ Wipe Save</button>
+                </div>
+                <p class="panel-note">Auto-saves every 30 seconds to your browser storage.</p>
+              </div>
+
+              <div class="panel-section">
+                <h3>Audio &amp; Visual Preferences</h3>
+                <div class="options-grid">
+                  <label class="option-toggle">
+                    <span>Sound Effects</span>
+                    <button id="opt-sound-toggle" class="toggle-pill on" type="button" aria-pressed="true">ON</button>
+                  </label>
+
+                  <label class="option-slider-row" for="opt-volume-slider">
+                    <span>Master Volume (<strong id="opt-volume-val">70%</strong>)</span>
+                    <input id="opt-volume-slider" type="range" min="0" max="100" step="1" value="70" />
+                  </label>
+
+                  <label class="option-toggle">
+                    <span>Short Numbers (1.234 million)</span>
+                    <button id="opt-short-numbers" class="toggle-pill on" type="button" aria-pressed="true">ON</button>
+                  </label>
+
+                  <label class="option-toggle">
+                    <span>Click Particles &amp; Floating +X</span>
+                    <button id="opt-particles" class="toggle-pill on" type="button" aria-pressed="true">ON</button>
+                  </label>
+
+                  <label class="option-toggle">
+                    <span>Fancy Graphics (Sunbeams &amp; Waves)</span>
+                    <button id="opt-fancy" class="toggle-pill on" type="button" aria-pressed="true">ON</button>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Center Overlay Panel: STATS -->
+          <div id="panel-stats" class="center-panel hidden" role="dialog" aria-label="Statistics">
+            <div class="panel-header">
+              <h2>📊 Statistics</h2>
+              <button class="panel-close-btn" type="button" data-close-panel aria-label="Close Stats">✕</button>
+            </div>
+            <div class="panel-body">
+              <div class="panel-section">
+                <h3>General Bakery Stats</h3>
+                <div id="stats-general-grid" class="stats-grid"></div>
+              </div>
+
+              <div class="panel-section">
+                <h3>🥛 Milk &amp; Flavor</h3>
+                <div id="stats-milk-box" class="stats-milk-box"></div>
+              </div>
+
+              <div class="panel-section">
+                <h3>🧪 Upgrades Purchased (<span id="stats-upgrades-count">0 / 0</span>)</h3>
+                <div id="stats-upgrades-grid" class="crate-grid stats-crate-grid"></div>
+              </div>
+
+              <div class="panel-section">
+                <h3>🏆 Achievements (<span id="stats-ach-count">0 / 0 (0%)</span>)</h3>
+                <div id="stats-achievements-grid" class="crate-grid stats-crate-grid"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Center Overlay Panel: INFO -->
+          <div id="panel-info" class="center-panel hidden" role="dialog" aria-label="Info and Lore">
+            <div class="panel-header">
+              <h2>📜 Info &amp; Lore</h2>
+              <button class="panel-close-btn" type="button" data-close-panel aria-label="Close Info">✕</button>
+            </div>
+            <div class="panel-body info-body">
+              <div class="panel-section">
+                <h3>How to Play</h3>
+                <ul class="info-list">
+                  <li><strong>Tap Tung Tung Tung Sahur:</strong> Every tap drums up Tangsahurs.</li>
+                  <li><strong>Hire Buildings in the Store:</strong> Buildings automatically generate Tangsahurs per second (TpS) even while you rest.</li>
+                  <li><strong>Buy Upgrades:</strong> Boost your click power, double building output, and unlock Grandma Synergies &amp; Milk Kittens.</li>
+                  <li><strong>Catch Golden Tangsahurs:</strong> Watch the screen for shimmering Golden Tangsahurs that grant Frenzy (×7 TpS), Click Frenzy (×777 click!), Lucky! bursts, or Sahur Storms!</li>
+                  <li><strong>Harvest Sahur Lumps:</strong> Once your bakery matures, wooden Sahur Lumps sprout over time. Harvest ripe lumps to level up buildings (+1% TpS each!).</li>
+                  <li><strong>Ascend via Legacy:</strong> When you've baked mountains of Tangsahurs, Ascend into the Astral Plane to claim permanent Heavenly Chips and unlock celestial perks.</li>
+                </ul>
+              </div>
+
+              <div class="panel-section">
+                <h3>The Legend of Tung Tung Tung Sahur</h3>
+                <p>
+                  At precisely <strong>3:00 AM</strong>, when sleepy neighborhoods drift through pre-dawn quiet, an ancient hollow wooden <em>kentongan</em> awakens with legs, eyes, and an unstoppable rhythm: <em>"Tung! Tung! Tung! Sahur!"</em>
+                </p>
+                <p>
+                  Legend says if someone hears the call three times and fails to wake up for Sahur, the wooden drummer invites them straight into a cosmic bakery of infinite Tangsahurs.
+                </p>
+              </div>
+
+              <div class="panel-section">
+                <h3>Keyboard Shortcuts &amp; Credits</h3>
+                <ul class="info-list">
+                  <li><kbd>Space</kbd> / <kbd>Enter</kbd> (focused on Big Tangsahur): Tap without key-repeat spam</li>
+                  <li><kbd>Esc</kbd>: Close open modals or center overlays</li>
+                  <li><kbd>Ctrl+S</kbd>: Manual Save</li>
+                </ul>
+                <p class="panel-note">Tangsahur Clicker v1.0.0 — An homage to Cookie Clicker &amp; Tung Tung Tung Sahur. Pure client-side HTML/CSS/ES Modules.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="column-divider" aria-hidden="true"></div>
+
+      <!-- RIGHT COLUMN (~28%): Store -->
+      <aside id="col-right" class="column col-right" aria-label="Store">
+        <div class="store-header">
+          <h2>Store</h2>
+        </div>
+
+        <!-- Upgrades Crate -->
+        <section class="upgrades-section" aria-label="Available Upgrades">
+          <div class="upgrades-bar">
+            <span class="upgrades-title">Upgrades <span id="upgrades-avail-count" class="upgrades-avail-count">(0)</span></span>
+            <button id="upgrades-expand-btn" class="upgrades-expand-btn" type="button" title="Toggle expand upgrades crate">▼ Expand</button>
+          </div>
+          <div id="upgrades-crate" class="upgrades-crate" data-expanded="false">
+            <div id="upgrades-empty" class="upgrades-empty">No upgrades available yet. Keep drumming!</div>
+            <div id="upgrades-grid" class="crate-grid"></div>
+          </div>
+        </section>
+
+        <!-- Buy / Sell + Bulk Controls -->
+        <div class="store-controls">
+          <div class="mode-toggle" role="group" aria-label="Trade Mode">
+            <button id="mode-buy-btn" class="mode-btn active" type="button" data-mode="buy">Buy</button>
+            <button id="mode-sell-btn" class="mode-btn" type="button" data-mode="sell">Sell</button>
+          </div>
+          <div class="bulk-toggle" role="group" aria-label="Bulk Amount">
+            <button class="bulk-btn active" type="button" data-bulk="1">1</button>
+            <button class="bulk-btn" type="button" data-bulk="10">10</button>
+            <button class="bulk-btn" type="button" data-bulk="100">100</button>
+            <button id="bulk-max-btn" class="bulk-btn" type="button" data-bulk="max">Max</button>
+          </div>
+        </div>
+
+        <!-- Buildings List -->
+        <div id="buildings-list" class="buildings-list" role="list" aria-label="Buildings"></div>
+      </aside>
+    </main>
+  </div>
+
+  <!-- Golden Tangsahurs Floating Overlay Layer -->
+  <div id="golden-layer" class="golden-layer" aria-live="polite"></div>
+
+  <!-- Toast Notifications Stack (Bottom-Center) -->
+  <div id="toast-stack" class="toast-stack" aria-live="polite" aria-atomic="false"></div>
+
+  <!-- Smart Viewport-Clamped Tooltip -->
+  <div id="tooltip" class="tooltip hidden" role="tooltip" aria-hidden="true"></div>
+
+  <!-- In-App Modal Backdrop -->
+  <div id="modal-backdrop" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div id="modal-card" class="modal-card">
+      <div class="modal-header">
+        <h3 id="modal-title">Modal</h3>
+        <button id="modal-close-btn" class="panel-close-btn" type="button" aria-label="Close modal">✕</button>
+      </div>
+      <div id="modal-body" class="modal-body"></div>
+      <div id="modal-footer" class="modal-footer"></div>
+    </div>
+  </div>
+
+  <!-- Full-Screen Astral Ascension Overlay -->
+  <div id="ascension-overlay" class="ascension-overlay hidden" role="dialog" aria-modal="true" aria-label="Astral Plane Ascension">
+    <canvas id="astral-canvas" class="astral-canvas" aria-hidden="true"></canvas>
+
+    <div class="ascension-hud">
+      <div class="ascension-hud-left">
+        <h2>✨ Astral Sahur Plane</h2>
+        <div class="astral-chips-readout">
+          <span class="chip-pill">🍪 Heavenly Chips: <strong id="astral-chips-count">0</strong></span>
+          <span class="chip-pill">🌟 Prestige Level: <strong id="astral-prestige-level">0</strong> (+<span id="astral-prestige-pct">0%</span> TpS)</span>
+        </div>
+      </div>
+      <div class="ascension-hud-right">
+        <button id="astral-center-btn" class="cc-btn" type="button">🎯 Center Tree</button>
+        <button id="reincarnate-btn" class="cc-btn cc-btn-ascend" type="button">🌅 Reincarnate</button>
+      </div>
+    </div>
+
+    <div id="astral-viewport" class="astral-viewport">
+      <div id="astral-tree-stage" class="astral-tree-stage">
+        <svg id="astral-lines" class="astral-lines" width="1600" height="1200" viewBox="-800 -600 1600 1200" aria-hidden="true"></svg>
+        <div id="astral-nodes" class="astral-nodes"></div>
+      </div>
+    </div>
+
+    <div class="astral-hint">Drag anywhere to pan the Astral Tree • Hover nodes for details • Click available nodes to unlock</div>
+  </div>
+
+  <script type="module" src="./ui.js"></script>
+</body>
+</html>
