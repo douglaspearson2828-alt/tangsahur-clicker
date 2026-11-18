@@ -29,6 +29,7 @@ let tradeMode = 'buy'; // 'buy' | 'sell'
 let bulkAmount = 1; // 1 | 10 | 100 | 'max'
 let activePanel = null; // null | 'options' | 'stats' | 'info'
 let clickCombo = 0;
+let tungBeat = 0;
 let lastSaveAtMs = Date.now();
 let lastTickRafMs = performance.now();
 let lastTickWallMs = Date.now();
@@ -1594,12 +1595,13 @@ function startAstralStars() {
 // =========================================================
 // News Ticker
 // =========================================================
-function pickNextHeadline(forceFortune = false) {
+function pickNextHeadline({ allowFortune = false, forceFortune = false } = {}) {
   const next = Engine.pickNewsHeadline(state, derived);
   if (!next) return;
 
   currentNewsText = next;
-  fortuneActive = forceFortune || Math.random() < 0.14;
+  // Fortunes only appear rarely on natural ticker rotation (never from manual spam-clicking)
+  fortuneActive = forceFortune || (allowFortune && Math.random() < 0.04);
   lastNewsSwapMs = Date.now();
 
   el.newsTickerText.textContent = fortuneActive ? `✨ FORTUNE: ${currentNewsText} (Click!)` : currentNewsText;
@@ -1609,7 +1611,7 @@ function pickNextHeadline(forceFortune = false) {
 // =========================================================
 // Click Visual Effects
 // =========================================================
-function spawnClickFx(stageX, stageY, gained) {
+function spawnClickFx(stageX, stageY, gained, beatStep = 0) {
   if (!prefs.particles) return;
 
   // Trim old FX if clicking at lightning speed
@@ -1628,6 +1630,20 @@ function spawnClickFx(stageX, stageY, gained) {
   setTimeout(() => {
     if (plus.parentNode) plus.parentNode.removeChild(plus);
   }, 950);
+
+  // Rhythmic TUNG! TUNG! TUNG! SAHUR! callout
+  if (prefs.fancyGraphics) {
+    const tung = document.createElement('div');
+    const isSahur = beatStep === 3;
+    tung.className = `float-tung${isSahur ? ' sahur-beat' : ''}`;
+    tung.style.left = `${stageX + (Math.random() * 44 - 22)}px`;
+    tung.style.top = `${stageY - 34}px`;
+    tung.textContent = isSahur ? 'SAHUR!' : 'TUNG!';
+    el.clickFxLayer.appendChild(tung);
+    setTimeout(() => {
+      if (tung.parentNode) tung.parentNode.removeChild(tung);
+    }, 850);
+  }
 
   // Expanding Shockwave Ring
   if (prefs.fancyGraphics) {
@@ -1726,7 +1742,7 @@ function stepLoop(rafNow) {
     updateSaveStatusLabel(false);
 
     if (nowMs - lastNewsSwapMs >= NEWS_INTERVAL_MS) {
-      pickNextHeadline(false);
+      pickNextHeadline({ allowFortune: true });
     }
     if (nowMs - lastSaveAtMs >= AUTO_SAVE_INTERVAL_MS) {
       saveGameState(false);
@@ -1759,6 +1775,8 @@ function bindEvents() {
     const nowMs = Date.now();
     const res = Engine.handleClick(state, nowMs);
     clickCombo = (clickCombo + 1) % 3;
+    const beatStep = tungBeat;
+    tungBeat = (tungBeat + 1) % 4;
     sound.playClick(clickCombo);
 
     // Spring animation
@@ -1776,7 +1794,7 @@ function bindEvents() {
     }
 
     const gained = res?.gained ?? derived.clickPower ?? 1;
-    spawnClickFx(fxX, fxY, gained);
+    spawnClickFx(fxX, fxY, gained, beatStep);
     if (res?.newAchievements?.length) {
       announceAchievements(res.newAchievements);
     }
@@ -1804,8 +1822,9 @@ function bindEvents() {
 
   // News Ticker
   el.newsTickerBtn.addEventListener('click', () => {
+    const nowMs = Date.now();
     if (fortuneActive) {
-      const res = Engine.recordNewsClick(state);
+      const res = Engine.recordNewsClick(state, nowMs, { isFortune: true });
       const bonus = res?.bonus || 0;
       sound.playGoldenClick();
       if (bonus > 0) {
@@ -1818,12 +1837,12 @@ function bindEvents() {
       }
       if (res?.newAchievements?.length) announceAchievements(res.newAchievements);
       fortuneActive = false;
-      pickNextHeadline(false);
+      pickNextHeadline({ allowFortune: false });
       refreshDerivedAndUI();
     } else {
-      const res = Engine.recordNewsClick(state);
+      const res = Engine.recordNewsClick(state, nowMs, { isFortune: false });
       if (res?.newAchievements?.length) announceAchievements(res.newAchievements);
-      pickNextHeadline(false);
+      pickNextHeadline({ allowFortune: false });
     }
   });
 
@@ -2124,7 +2143,7 @@ function init() {
   el.versionBadge.textContent = `v${Data.GAME_VERSION || '1.0.0'}`;
   applyPrefsToEnvironment();
   bindEvents();
-  pickNextHeadline(false);
+  pickNextHeadline({ allowFortune: false });
 
   // Offline Welcome Back check
   const offline = Engine.applyOfflineProgress(state, Date.now());

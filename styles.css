@@ -632,14 +632,34 @@ textarea:focus-visible {
 
 .mini-particle {
   position: absolute;
-  width: 24px;
-  height: 24px;
-  background-image: url('./assets/tangsahur.png');
+  width: 28px;
+  height: 28px;
+  background-image: url('./assets/tangsahur-face.png');
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
-  opacity: 0.9;
+  opacity: 0.94;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.55));
   animation: mini-fall 1.05s cubic-bezier(0.32, 0.02, 0.75, 0.85) forwards;
+}
+
+.float-tung {
+  position: absolute;
+  font-family: var(--font-display);
+  font-size: 0.88rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: #ffe3a3;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.95);
+  white-space: nowrap;
+  transform: translate(-50%, -50%);
+  animation: float-up-fade 0.85s ease-out forwards;
+}
+
+.float-tung.sahur-beat {
+  font-size: 1.08rem;
+  color: var(--gold-bright);
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.95), 0 0 12px rgba(255, 209, 102, 0.8);
 }
 
 @keyframes mini-fall {
@@ -651,6 +671,27 @@ textarea:focus-visible {
     opacity: 0;
     transform: translate(var(--dx, 30px), var(--dy, 150px)) rotate(var(--rot, 160deg)) scale(0.5);
   }
+}
+
+/* Subtle Drifting Tung Tung Background Watermark Faces */
+.sahur-bg-faces {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image:
+    url('./assets/tangsahur-face.png'),
+    url('./assets/tangsahur-face.png');
+  background-size: 56px 56px, 44px 44px;
+  background-position: 12px 14px, 68px 58px;
+  background-repeat: repeat;
+  opacity: 0.07;
+  animation: sahur-bg-drift 18s linear infinite;
+}
+
+@keyframes sahur-bg-drift {
+  0% { background-position: 12px 14px, 68px 58px; }
+  100% { background-position: 124px -98px, 180px -54px; }
 }
 
 /* Animated Layered Milk Waves */
@@ -670,8 +711,8 @@ textarea:focus-visible {
   left: 0;
   right: 0;
   bottom: 0;
-  height: var(--milk-pct, 8%);
-  min-height: 28px;
+  height: var(--milk-pct, 12%);
+  min-height: 44px;
   transition: height 0.8s ease;
 }
 
@@ -700,7 +741,28 @@ textarea:focus-visible {
   position: absolute;
   inset: 0;
   background: linear-gradient(180deg, var(--milk-top) 0%, var(--milk-bottom) 100%);
-  opacity: 0.86;
+  opacity: 0.88;
+}
+
+.milk-faces {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    url('./assets/tangsahur-face.png'),
+    url('./assets/tangsahur-face.png');
+  background-size: 38px 38px, 38px 38px;
+  background-position: 0px 2px, 19px 21px;
+  background-repeat: repeat;
+  opacity: 0.78;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.28));
+  animation: milk-faces-flow 6.5s linear infinite;
+}
+
+@keyframes milk-faces-flow {
+  0% { background-position: 0px 2px, 19px 21px; }
+  50% { background-position: -57px 0px, -38px 19px; }
+  100% { background-position: -114px 2px, -95px 21px; }
 }
 
 @keyframes wave-slide {
@@ -2123,6 +2185,8 @@ kbd {
 body.no-fancy-graphics .sunbeams,
 body.no-fancy-graphics .kentongan-orbit,
 body.no-fancy-graphics .milk-wave,
+body.no-fancy-graphics .milk-faces,
+body.no-fancy-graphics .sahur-bg-faces,
 body.no-fancy-graphics .diorama-sprite {
   animation: none !important;
 }
@@ -2132,6 +2196,7 @@ body.no-fancy-graphics .sunbeams {
 }
 
 body.no-particles .float-plus,
+body.no-particles .float-tung,
 body.no-particles .mini-particle,
 body.no-particles .click-shockwave {
   display: none !important;

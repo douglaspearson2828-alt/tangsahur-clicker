@@ -1124,12 +1124,12 @@ export const ACHIEVEMENT_MAP = Object.fromEntries(ACHIEVEMENTS.map((a) => [a.id,
  * 6 Milk tiers reflecting Milk rank from non-shadow achievements.
  */
 export const MILK_TIERS = [
-  { minMilk: 0, name: 'Plain Milk', colorTop: '#f5f2eb', colorBottom: '#ded8ca', foamColor: '#ffffff' },
+  { minMilk: 0, name: 'Tung Tung Milk', colorTop: '#f5f2eb', colorBottom: '#ded8ca', foamColor: '#ffffff' },
   { minMilk: 0.5, name: 'Warm Sahur Tea', colorTop: '#d7a86e', colorBottom: '#a67139', foamColor: '#f3dec0' },
-  { minMilk: 1.0, name: 'Caramel Milk', colorTop: '#e09145', colorBottom: '#9e5316', foamColor: '#fae0c3' },
-  { minMilk: 1.8, name: 'Raspberry Milk', colorTop: '#e85d88', colorBottom: '#a62652', foamColor: '#ffd4e2' },
+  { minMilk: 1.0, name: 'Caramel Tung Milk', colorTop: '#e09145', colorBottom: '#9e5316', foamColor: '#fae0c3' },
+  { minMilk: 1.8, name: 'Raspberry Sahur Milk', colorTop: '#e85d88', colorBottom: '#a62652', foamColor: '#ffd4e2' },
   { minMilk: 2.5, name: 'Midnight Matcha', colorTop: '#6ec47e', colorBottom: '#2d7a42', foamColor: '#d9fce0' },
-  { minMilk: 3.2, name: 'Cosmic Star Milk', colorTop: '#7a68ee', colorBottom: '#2b1c7a', foamColor: '#e0dcff' },
+  { minMilk: 3.2, name: 'Cosmic Tung Milk', colorTop: '#7a68ee', colorBottom: '#2b1c7a', foamColor: '#e0dcff' },
 ];
 
 /**
@@ -1163,7 +1163,11 @@ export const NEWS_HEADLINES = [
   'News: Heavy sleepers forced to surrender after Anti-Sleep Condenser reaches full charge.',
   'News: Economists adopt "Tangsahurs per Second" as official metric of nocturnal productivity.',
   'News: Shimmering Sahur Lumps observed sprouting atop grandfathers’ wall clocks.',
-  'News: Rumor: Clicking this news ticker occasionally spills spare lucky Tangsahurs.',
+  'News: Rumor: Waiting for a rare glowing Sahur Fortune headline spills bonus Tangsahurs when clicked.',
+  'News: Health Department baffled as local milk supply grows Tung Tung Tung Sahur faces and smiles back at 3:00 AM.',
+  'News: "TUNG! TUNG! TUNG! SAHUR!" echoes from inside the milk carton; breakfast consumption rises 900%.',
+  'News: Witnesses report Tung Tung Tung Sahur staring calmly from every ripple in the Sahur Milk.',
+  'News: Do NOT sleep through the third Tung — Tung Tung Tung Sahur is already outside your bakery.',
   'News: "Every great empire begins with one stick and an unhealthy sleep schedule," writes historian.',
   'News: Deep-space probes pick up rhythmic knocking from Andromeda; translates roughly to "Sahur!"',
   (s) => `News: "${s?.bakeryName || 'Tung Tung Sahur'}'s Sahur Bakery" voted loudest wake-up service in the hemisphere!`,

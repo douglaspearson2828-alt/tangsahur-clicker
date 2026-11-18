@@ -205,6 +205,7 @@ export function createInitialState(bakeryName = 'Tung Tung Sahur', nowMs = Date.
     lumpStartMs: safeNow,
     lumpStartedAtMs: safeNow,
     newsClicks: 0,
+    lastFortuneMs: 0,
     clickTimestamps: [],
     uncannyClickEarned: false,
     justPlainLuckyEarned: false,
@@ -1360,27 +1361,43 @@ export function renameBakery(state, name) {
 }
 
 /**
- * Records a click on the News Ticker, granting a small fortune bonus and achievement check.
+ * Records a click on the News Ticker.
+ * Normal news clicks only increment newsClicks & check achievements (0 Tangsahurs, like Cookie Clicker).
+ * Rare Fortune clicks ({ isFortune: true }) grant a modest cooldown-gated bonus.
  */
-export function recordNewsClick(state, nowMs = Date.now()) {
-  const safeNow = Number.isFinite(Number(nowMs)) ? Number(nowMs) : Date.now();
+export function recordNewsClick(state, nowMsOrOpts = Date.now(), maybeOpts = {}) {
+  let rawNow = nowMsOrOpts;
+  let opts = maybeOpts || {};
+  if (nowMsOrOpts && typeof nowMsOrOpts === 'object') {
+    opts = nowMsOrOpts;
+    rawNow = opts.nowMs ?? Date.now();
+  }
+  const safeNow = Number.isFinite(Number(rawNow)) ? Number(rawNow) : Date.now();
   state._simNowMs = safeNow;
   state.newsClicks = finiteInt(state.newsClicks, 0) + 1;
 
-  const derived = computeDerived(state, safeNow);
-  const bonus = Math.max(1, Math.floor(derived.rawCps * 5 + derived.rawClickPower));
-
+  const isFortune = Boolean(opts.isFortune);
   const paused = Boolean(state.isAscending || state.ascended);
-  if (!paused && Number.isFinite(bonus) && bonus > 0) {
-    state.tangsahurs = finiteNonNeg(state.tangsahurs, 0) + bonus;
-    state.totalBakedRun = finiteNonNeg(state.totalBakedRun, 0) + bonus;
-    state.totalBakedAllTime = finiteNonNeg(state.totalBakedAllTime, 0) + bonus;
+  const lastFortune = finiteNonNeg(state.lastFortuneMs, 0);
+  const FORTUNE_COOLDOWN_MS = 20000;
+
+  let netGained = 0;
+  if (isFortune && !paused && (lastFortune === 0 || safeNow - lastFortune >= FORTUNE_COOLDOWN_MS)) {
+    const derived = computeDerived(state, safeNow);
+    const bonus = Math.max(3, Math.floor(derived.rawCps * 12 + derived.rawClickPower * 2));
+    if (Number.isFinite(bonus) && bonus > 0) {
+      state.tangsahurs = finiteNonNeg(state.tangsahurs, 0) + bonus;
+      state.totalBakedRun = finiteNonNeg(state.totalBakedRun, 0) + bonus;
+      state.totalBakedAllTime = finiteNonNeg(state.totalBakedAllTime, 0) + bonus;
+      state.lastFortuneMs = safeNow;
+      netGained = bonus;
+    }
   }
 
   const newAchievements = checkAchievements(state, safeNow);
-  const netGained = paused ? 0 : bonus;
   return {
     ok: true,
+    isFortune,
     gained: netGained,
     bonus: netGained,
     newsClicks: state.newsClicks,
@@ -1565,6 +1582,7 @@ function sanitizeState(raw) {
   base.lumpStartMs = safeLumpStart;
   base.lumpStartedAtMs = safeLumpStart;
   base.newsClicks = finiteInt(raw.newsClicks, 0);
+  base.lastFortuneMs = finiteNonNeg(raw.lastFortuneMs, 0);
   base.uncannyClickEarned = Boolean(raw.uncannyClickEarned);
   base.justPlainLuckyEarned = Boolean(raw.justPlainLuckyEarned);
 
